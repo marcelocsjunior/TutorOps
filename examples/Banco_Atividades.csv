@@ -1,0 +1,2 @@
+tema,tipo_atividade,nivel,descricao,criterio_avaliacao,observacoes
+Redes TCP/IP,Prática guiada,Básico,"Aluno deve identificar IP, máscara, gateway e DNS em uma estação e testar conectividade.","Executa diagnóstico básico e explica cada item de configuração de rede.",Atividade inicial para aula piloto.
