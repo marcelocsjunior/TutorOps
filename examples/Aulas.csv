@@ -1,0 +1,2 @@
+id_aula,data,turma,tema,nivel,objetivo,conteudo_base,duracao,status,link_material,observacoes,material_gerado,output
+AULA-001,2026-05-20,Turma piloto,Fundamentos de redes TCP/IP,Básico,"Explicar endereçamento IP, máscara, gateway e DNS com prática guiada.","Redes lógicas de computadores; diagnóstico básico; comandos ping, ipconfig/ifconfig e nslookup.",2h,Pendente,,Aula exemplo para validação do workflow.,,
