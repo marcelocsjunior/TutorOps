@@ -1,0 +1,5 @@
+chave,valor
+modelo_ia,llama3.2:3b
+canal_saida,Telegram
+idioma,pt_BR
+projeto,TutorOps
