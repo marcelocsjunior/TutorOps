@@ -34,7 +34,7 @@ Manual Trigger
 → Ollama Chat Model
 → Preparar Atualização
 → Atualizar Aula
-→ Send a text message
+→ Telegram Notificação
 ```
 
 ## O que o workflow faz
