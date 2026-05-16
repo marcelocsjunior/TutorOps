@@ -1,0 +1,139 @@
+{
+  "name": "TutorOps - Gerador de Aula IA",
+  "active": false,
+  "nodes": [
+    {
+      "name": "When clicking ‘Execute workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-960, -128],
+      "parameters": {}
+    },
+    {
+      "name": "Ler Aula",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [-736, -128],
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": "REPLACE_GOOGLE_SHEET_ID",
+        "sheetName": "Aulas",
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "status",
+              "lookupValue": "Pendente"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "googleApi": {
+          "id": "REPLACE_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "name": "Gerar Plano de Aula IA",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [-512, -128],
+      "parameters": {
+        "promptType": "define",
+        "text": "=Você é um instrutor técnico de Tecnologia da Informação especializado em suporte técnico, redes de computadores e infraestrutura. Crie um plano de aula prático usando somente os dados recebidos. Responda somente em português do Brasil. Não use JSON. Não invente instituição, certificação, tecnologia, ferramenta ou carga horária. Não diga que ipconfig ou ifconfig configuram endereço IP. ipconfig e ifconfig servem para consultar informações de rede. ping serve para testar conectividade. nslookup serve para consultar resolução DNS. DADOS DA AULA: ID: {{$json.id_aula}} Data: {{$json.data}} Turma: {{$json.turma}} Tema: {{$json.tema}} Nível: {{$json.nivel}} Objetivo: {{$json.objetivo}} Conteúdo base: {{$json.conteudo_base}} Duração: {{$json.duracao}} Observações: {{$json.observacoes}} Gere um plano de aula com contextualização, conteúdo técnico, demonstração prática, atividade dos alunos, perguntas de fixação, critérios de avaliação, evidências geradas e observações para o instrutor."
+      }
+    },
+    {
+      "name": "Ollama Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [-512, 64],
+      "parameters": {
+        "model": "llama3.2:3b"
+      },
+      "credentials": {
+        "ollamaApi": {
+          "id": "REPLACE_CREDENTIAL_ID",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "name": "Preparar Atualização",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-160, -128],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "row_number",
+              "value": "={{$node[\"Ler Aula\"].json[\"row_number\"]}}",
+              "type": "string"
+            },
+            {
+              "name": "status",
+              "value": "Material gerado",
+              "type": "string"
+            },
+            {
+              "name": "material_gerado",
+              "value": "={{$json.output}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Atualizar Aula",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [144, -96],
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "documentId": "REPLACE_GOOGLE_SHEET_ID",
+        "sheetName": "Aulas",
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "matchingColumns": ["row_number"]
+        }
+      },
+      "credentials": {
+        "googleApi": {
+          "id": "REPLACE_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "name": "Send a text message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [336, -96],
+      "parameters": {
+        "chatId": "REPLACE_TELEGRAM_CHAT_ID",
+        "text": "={{ \"📘 TutorOps - Aula gerada\\n\\n\" + \"Tema: \" + $node[\"Ler Aula\"].json[\"tema\"] + \"\\n\" + \"Turma: \" + $node[\"Ler Aula\"].json[\"turma\"] + \"\\n\" + \"Nível: \" + $node[\"Ler Aula\"].json[\"nivel\"] + \"\\n\\n\" + \"✅ Material registrado na planilha.\\n\\n\" + \"Status: Material gerado\" }}"
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "REPLACE_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {"main": [[{"node": "Ler Aula", "type": "main", "index": 0}]]},
+    "Ler Aula": {"main": [[{"node": "Gerar Plano de Aula IA", "type": "main", "index": 0}]]},
+    "Ollama Chat Model": {"ai_languageModel": [[{"node": "Gerar Plano de Aula IA", "type": "ai_languageModel", "index": 0}]]},
+    "Gerar Plano de Aula IA": {"main": [[{"node": "Preparar Atualização", "type": "main", "index": 0}]]},
+    "Preparar Atualização": {"main": [[{"node": "Atualizar Aula", "type": "main", "index": 0}]]},
+    "Atualizar Aula": {"main": [[{"node": "Send a text message", "type": "main", "index": 0}]]}
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
