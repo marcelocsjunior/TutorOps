@@ -4,7 +4,7 @@
 
 TutorOps é um workflow autoral em n8n para apoiar o planejamento, geração e registro de aulas técnicas. Ele lê uma aula cadastrada no Google Sheets, gera um plano de aula com IA local via Ollama, grava o material gerado na planilha e envia uma notificação pelo Telegram.
 
-![Workflow TutorOps](assets/tutorops-workflow.svg)
+<img width="970" height="300" alt="image" src="https://github.com/user-attachments/assets/9516eda1-1ccf-47c4-a0b8-593f48e72dfc" />
 
 ## Objetivo
 
